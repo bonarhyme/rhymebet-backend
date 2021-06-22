@@ -51,14 +51,21 @@ const userSchema = mongoose.Schema(
   }
 );
 
-//THis is used to match passwords
+/**
+ *
+ * @param {*} enteredPassword - or The user's password
+ * @returns if password matches the user's password in the database
+ */
+
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-//This is used to test
+/**
+ * @description This rehashes a password if updated or changed.
+ */
 userSchema.pre("save", async function (next) {
-  //This first one checks to see that it doesnt rehash a password on login or registe
+  // This first one checks to see that it doesnt rehash a password on login or registe
   if (!this.isModified("password")) {
     next();
   }

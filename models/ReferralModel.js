@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const referralSchema = mongoose.Schema(
   {
-    theReferreeUser: {
+    theReferreeUserId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
