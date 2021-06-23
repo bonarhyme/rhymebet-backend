@@ -4,7 +4,7 @@ const router = express.Router();
 const {
   registerUser,
   verifyUser,
-  // loginUser
+  loginUser,
 } = require("../controllers/userControllers");
 const { checkForm, checkUsername } = require("../middleware/checkForms");
 
@@ -14,6 +14,7 @@ router.post("/register", checkForm, registerUser);
 // /api/user/verify-user
 router.put("/verify-user", checkUsername, verifyUser);
 
-// router.post("/login", checkUsername, loginUser);
+// /api/user/login
+router.post("/login", checkUsername, loginUser);
 
 module.exports = router;

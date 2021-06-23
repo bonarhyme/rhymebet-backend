@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const Referral = require("../models/ReferralModel");
 const confirmEmail = require("../utility/confirmEmail");
+const generateToken = require("../utility/generateToken");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(55).required(),
@@ -142,18 +143,55 @@ const verifyUser = asyncHandler(async (req, res) => {
   res.end();
 });
 
-// const loginUser = async (req, res) => {
-//   const { username, password } = req.body;
+/**
+ * @description This allows a user to login
+ * @description The routes are POST request of /api/user/login
+ * @required req.body.username and req.body.password
+ * @access This a public routes
+ */
 
-//   if (!username || !password) {
-//     res.send({
-//       error:
-//         "C'mon! You cannot send an incomplete field during registration. Please provide a name, email, username and password. ",
-//     });
-//   } else {
-//     res.send(req.body);
-//   }
-// };
+const loginUser = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    res.status(400);
+    throw new Error(
+      "You cannot send an incomplete form. Please make sure you send a valid username and it's corresponding password."
+    );
+  }
+
+  const usernameExist = await User.findOne({ username });
+
+  if (!usernameExist) {
+    res.status(400);
+    throw new Error(
+      "User does not exist in our system. Please check your spelling."
+    );
+  }
+
+  if (usernameExist.isVerified === false) {
+    res.status(401);
+    throw new Error(
+      "You have not verified your account. Check your email to verify your account or click on verify account."
+    );
+  }
+
+  if (await usernameExist.matchPassword(password)) {
+    res.json({
+      _id: usernameExist._id,
+      name: usernameExist.name,
+      email: usernameExist.email,
+      username: usernameExist.username,
+      isAdmin: usernameExist.isAdmin,
+      isSuperAdmin: usernameExist.isSuperAdmin,
+      isVerified: usernameExist.isVerified,
+      token: generateToken(usernameExist._id),
+    });
+  } else {
+    res.status(401);
+    throw new Error("Invalid username or password");
+  }
+});
 
 module.exports = {
   schema,
@@ -161,5 +199,5 @@ module.exports = {
   emailSchema,
   registerUser,
   verifyUser,
-  // loginUser,
+  loginUser,
 };
