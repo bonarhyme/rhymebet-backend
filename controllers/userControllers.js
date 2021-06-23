@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const Referral = require("../models/ReferralModel");
 const confirmEmail = require("../utility/confirmEmail");
+const forgotPasswordEmail = require("../utility/forgotPassword");
 const generateToken = require("../utility/generateToken");
 
 const schema = Joi.object({
@@ -193,6 +194,37 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+// User sends the user a password reset mail
+// api/users/forgot-password
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    res.status(400);
+    throw new Error("You cannot send an empty form.");
+  }
+
+  const emailExist = await User.findOne({ email });
+
+  if (!emailExist) {
+    res.status(401);
+    throw new Error("This user does not exist in our system.");
+  }
+
+  const user = {
+    email,
+    token: generateToken(emailExist._id),
+  };
+
+  console.log(user);
+  await forgotPasswordEmail(user);
+
+  res.send({
+    message:
+      "<div> <h3> Please check your email to reset your password.</h3><hr /><p> If you haven't received our email in 15 minutes, please check your spam folder.</p><p>Sometimes it takes a bit longer, be patient! Double-check your spam and trash folders!</p><p>If it still doesn't appear please redo the step again</p> </div>",
+  });
+});
+
 module.exports = {
   schema,
   usernameSchema,
@@ -200,4 +232,5 @@ module.exports = {
   registerUser,
   verifyUser,
   loginUser,
+  forgotPassword,
 };

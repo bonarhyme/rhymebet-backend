@@ -5,6 +5,7 @@ const {
   registerUser,
   verifyUser,
   loginUser,
+  forgotPassword,
 } = require("../controllers/userControllers");
 const { checkForm, checkUsername } = require("../middleware/checkForms");
 
@@ -16,5 +17,8 @@ router.put("/verify-user", checkUsername, verifyUser);
 
 // /api/user/login
 router.post("/login", checkUsername, loginUser);
+
+// api/user/forgot-password
+router.post("/forgot-password", forgotPassword);
 
 module.exports = router;
