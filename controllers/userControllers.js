@@ -91,6 +91,57 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description This verifies a user
+ * @description The routes are PUT request of /api/user/verify-user
+ * @required reqbody.username and req.body.token
+ * @access This a public routes
+ */
+
+const verifyUser = asyncHandler(async (req, res) => {
+  const { username, token } = req.body;
+
+  const user = await User.findOne({ username });
+
+  if (!user) {
+    res.status(400);
+    throw new Error(
+      "The username you provided does not exist in our system. It might have been mispelt or has been deactivated."
+    );
+  }
+
+  if (user.isVerified == true) {
+    res.status(400);
+    throw new Error(
+      "Dear Customer, your account has already been verified and you cannot verify it again."
+    );
+  }
+  if (user && user.token === token) {
+    user.isVerified = true;
+    const verified = await user.save();
+
+    if (verified) {
+      const referredUser = await Referral.findOne({
+        referredUsername: user.usernamel,
+      });
+      if (referredUser) {
+        referredUser.isVerified = true;
+        await referredUser.save();
+      }
+      res.send({
+        message:
+          "Your account has been verified successfully. You can now login.",
+      });
+    }
+  } else {
+    res.status(400);
+    throw new Error(
+      "Your account was not verified because the username or token you provided is incorrect."
+    );
+  }
+  res.end();
+});
+
 // const loginUser = async (req, res) => {
 //   const { username, password } = req.body;
 
@@ -109,5 +160,6 @@ module.exports = {
   usernameSchema,
   emailSchema,
   registerUser,
+  verifyUser,
   // loginUser,
 };
