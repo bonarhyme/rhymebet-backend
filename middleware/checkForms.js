@@ -1,6 +1,7 @@
 const {
   schema,
   usernameSchema,
+  passwordSchema,
   emailSchema,
 } = require("../controllers/userControllers");
 
@@ -52,4 +53,19 @@ const checkEmail = (req, res, next) => {
   }
 };
 
-module.exports = { checkForm, checkEmail, checkUsername };
+const checkPassword = (req, res, next) => {
+  const { value, error } = passwordSchema.validate({
+    password: req.body.password,
+  });
+
+  if (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+
+  if (value) {
+    next();
+  }
+};
+
+module.exports = { checkForm, checkEmail, checkUsername, checkPassword };

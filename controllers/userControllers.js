@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const Referral = require("../models/ReferralModel");
@@ -18,6 +19,10 @@ const schema = Joi.object({
 
 const usernameSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
+});
+
+const passwordSchema = Joi.object({
+  password: Joi.string().min(7).max(55).required(),
 });
 
 const emailSchema = Joi.object({
@@ -194,14 +199,19 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-// User sends the user a password reset mail
-// api/users/forgot-password
+/**
+ * @description This sends the user a password reset mail
+ * @description The routes are POST request of /api/user/forgot-password
+ * @required req.body.email
+ * @access This a public routes
+ */
+
 const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
     res.status(400);
-    throw new Error("You cannot send an empty form.");
+    throw new Error("You cannot send an incomplete form.");
   }
 
   const emailExist = await User.findOne({ email });
@@ -225,12 +235,60 @@ const forgotPassword = asyncHandler(async (req, res) => {
   });
 });
 
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZDI0NDgwZGE2ODI1MjA5YzI4Yjk4NCIsImlhdCI6MTYyNDQ2OTk5MSwiZXhwIjoxNjI3MDYxOTkxfQ.Pdn6DIK59cjdP_vgKMy7YLg1ut7vw6nGpdls4-4DSd4
+
+/**
+ * @description This resets the user's password
+ * @description The routes are POST request of /api/user/reset-password
+ * @required req.body.password && req.body.token
+ * @access This a public routes
+ */
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { password, token } = req.body;
+
+  let decoded;
+
+  if (!password || !token) {
+    res.status(400);
+    throw new Error("You cannot send an incomplete form.");
+  }
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    res.status(400);
+    throw new Error(
+      "Dear customer, your password reset failed because there is a problem with your token - It appears to have expired or altered. Please start the process over again by clicking on forgot password and complete it as soon as possible. We apologise for the inconveniences this might have caused you. "
+    );
+  }
+
+  const user = await User.findById(decoded.id);
+
+  if (!user) {
+    res.status(400);
+    throw new Error("User does not exist in our system.");
+  }
+
+  if (await user.matchPassword(password)) {
+    res.status(400);
+    throw new Error(
+      "You cannot set a new password if it matches a current one. Please, choose another password."
+    );
+  }
+
+  user.password = password;
+  await user.save();
+  res.send({ message: "Your password has been reset successfully." });
+});
+
 module.exports = {
   schema,
   usernameSchema,
+  passwordSchema,
   emailSchema,
   registerUser,
   verifyUser,
   loginUser,
   forgotPassword,
+  resetPassword,
 };
