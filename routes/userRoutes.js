@@ -7,13 +7,17 @@ const {
   loginUser,
   forgotPassword,
   resetPassword,
+  checkToken,
 } = require("../controllers/userControllers");
+const protect = require("../middleware/authMiddleware");
 const {
   checkForm,
   checkUsername,
   checkPassword,
   checkEmail,
 } = require("../middleware/checkForms");
+
+router.get("/check-token", protect, checkToken);
 
 //  /api/user/register/?ref=username
 router.post("/register", checkForm, registerUser);

@@ -235,8 +235,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
   });
 });
 
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZDI0NDgwZGE2ODI1MjA5YzI4Yjk4NCIsImlhdCI6MTYyNDQ2OTk5MSwiZXhwIjoxNjI3MDYxOTkxfQ.Pdn6DIK59cjdP_vgKMy7YLg1ut7vw6nGpdls4-4DSd4
-
 /**
  * @description This resets the user's password
  * @description The routes are POST request of /api/user/reset-password
@@ -281,6 +279,18 @@ const resetPassword = asyncHandler(async (req, res) => {
   res.send({ message: "Your password has been reset successfully." });
 });
 
+/**
+ * @description This checks the user token
+ * @description The routes are GET request of /api/user/check-token
+ * @access This a private user routes
+ */
+
+const checkToken = asyncHandler(async (req, res) => {
+  if (req.user) {
+    res.send({ message: "User's token is valid." });
+  }
+});
+
 module.exports = {
   schema,
   usernameSchema,
@@ -291,4 +301,5 @@ module.exports = {
   loginUser,
   forgotPassword,
   resetPassword,
+  checkToken,
 };
