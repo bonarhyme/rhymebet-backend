@@ -149,6 +149,33 @@ const verifyUser = asyncHandler(async (req, res) => {
   res.end();
 });
 
+// /**
+//  * @description This sends the user a verification email again
+//  * @description The routes are PUT request of /api/user/verify-user
+//  * @required reqbody.username and req.body.token
+//  * @access This a public routes
+//  */
+// const sendVerificationAgain = async (req, res) => {
+//   console.log("Route Hit");
+//   const { email } = req.body;
+
+//   const emailExist = await User.findOne({
+//     email,
+//   });
+
+//   if (!emailExist) {
+//     res.send({ error: "Email does not exist. Please check your spelling." });
+//   }
+
+//   if (emailExist) {
+//     confirmEmail(emailExist);
+//     res.send({
+//       message:
+//         "An email containing your verification code has been sent to your email.",
+//     });
+//   }
+// };
+
 /**
  * @description This allows a user to login
  * @description The routes are POST request of /api/user/login
@@ -190,7 +217,7 @@ const loginUser = asyncHandler(async (req, res) => {
       username: usernameExist.username,
       isAdmin: usernameExist.isAdmin,
       isSuperAdmin: usernameExist.isSuperAdmin,
-      isVerified: usernameExist.isVerified,
+      // isVerified: usernameExist.isVerified,
       token: generateToken(usernameExist._id),
     });
   } else {
@@ -231,7 +258,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   res.send({
     message:
-      "<div> <h3> Please check your email to reset your password.</h3><hr /><p> If you haven't received our email in 15 minutes, please check your spam folder.</p><p>Sometimes it takes a bit longer, be patient! Double-check your spam and trash folders!</p><p>If it still doesn't appear please redo the step again</p> </div>",
+      "Please check your email to reset your password. If you haven't received our email in 15 minutes, please check your spam folder. WSometimes it takes a bit longer, be patient! Double-check your spam and trash folders! If it still doesn't appear please redo the step again.",
   });
 });
 
@@ -291,6 +318,94 @@ const checkToken = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description This gets users profile using the user's authentication
+ * @description The routes are GET request of /api/user/profile
+ * @access This a private and protected route for only registered users
+ */
+
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select([
+    "-password",
+    "-token",
+    "-createdAt",
+    "-updatedAt",
+    "-isVerified",
+  ]);
+
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+/**
+ * @description This updates users profile using the user's authentication
+ * @description The routes are PUT request of /api/user/profile-update
+ * @access This a private and protected route for only registered users
+ */
+
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { email, name } = req.body;
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    (user.name = name || user.name), (user.email = email || user.email);
+
+    const updatedUser = await user.save();
+
+    if (updatedUser) {
+      res.send({
+        message: "Your profile has been updated successfully.",
+      });
+    }
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+/**
+ * @description This updates the user's password
+ * @description The routes are PUT request of /api/user/update-password
+ * @required req.body.password && req.body.currentPassword
+ * @access This a private and protected route for only registered users
+ */
+
+const updatePassword = asyncHandler(async (req, res) => {
+  const { password, currentPassword } = req.body;
+
+  const user = await User.findById(req.user._id);
+
+  if (!password || !currentPassword) {
+    res.status(400);
+    throw new Error("You cannot send an empty form.");
+  }
+
+  if ((await user.matchPassword(currentPassword)) === false) {
+    res.status(400);
+    throw new Error(
+      "The password you as your current password does not your match your account's password."
+    );
+  }
+
+  if (await user.matchPassword(password)) {
+    res.status(400);
+    throw new Error(
+      "You cannot set your current password a your new password."
+    );
+  }
+
+  user.password = password || user.password;
+  const updatedPassword = await user.save();
+
+  if (updatedPassword) {
+    res.send({ message: "Your password has been changed successfully." });
+  }
+});
+
 module.exports = {
   schema,
   usernameSchema,
@@ -302,4 +417,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   checkToken,
+  getUserProfile,
+  updateUserProfile,
+  updatePassword,
 };
