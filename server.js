@@ -7,21 +7,11 @@ require("dotenv/config");
 
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
+const gamesRoutes = require("./routes/gamesRoutes");
 
 // Parse JSON
 app.use(express.json());
 
-// Cors
-// var whitelist = ['http://example1.com', 'http://example2.com']
-// var corsOptions = {
-//   origin: function (origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1) {
-//       callback(null, true)
-//     } else {
-//       callback(new Error('Not allowed by CORS'))
-//     }
-//   }
-// }
 const corsOptions = {
   origin: variables.frontendLink,
   optionsSuccessStatus: 200,
@@ -36,6 +26,9 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 //User routes
 app.use("/api/user", userRoutes);
+
+//Game routes
+app.use("/api/games", gamesRoutes);
 
 //Not found URL middleware
 app.use(notFound);
