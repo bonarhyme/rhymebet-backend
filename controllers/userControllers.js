@@ -387,14 +387,14 @@ const updatePassword = asyncHandler(async (req, res) => {
   if ((await user.matchPassword(currentPassword)) === false) {
     res.status(400);
     throw new Error(
-      "The password you as your current password does not your match your account's password."
+      "The password you set as your current password does not your match your account's password."
     );
   }
 
   if (await user.matchPassword(password)) {
     res.status(400);
     throw new Error(
-      "You cannot set your current password a your new password."
+      "You cannot set your current password as your new password."
     );
   }
 
