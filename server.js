@@ -1,3 +1,16 @@
+// const sanitizeNosqlQuery = require("express-mongo-sanitize");
+// const rateLimiter = require("express-rate-limit");
+
+// app.use(
+//   "/api",
+//   rateLimiter({
+//     max: 1000,
+//     windowMs: 1000 * 60 * 60,
+//     message: "Too many requests from this IP. Try again in an hour.",
+//   })
+// );
+// app.use(sanitizeNosqlQuery());
+
 const express = require("express");
 const app = express();
 const cors = require("cors");

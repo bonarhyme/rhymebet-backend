@@ -53,7 +53,7 @@ const getGames = asyncHandler(async (req, res) => {
   //   }
   // : {};
 
-  const pageSize = 4;
+  const pageSize = 1;
   const page = Number(req.query.pageNumber) || 1;
 
   let games, count;
@@ -96,7 +96,42 @@ const getGames = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description This updates the status of a particular game
+ * @description It depends on param to determine the game
+ * @requires The routes are PuT request of /api/games/list/game/update/:id
+ * @access This is an admin or super admin only page
+ * 60e49c0b08abf003446f8217
+ */
+
+const updateParticularGame = asyncHandler(async (req, res) => {
+  try {
+    const theGameId = req.params.id;
+
+    const theGame = await Games.updateOne(
+      {
+        "games._id": theGameId,
+      },
+
+      { $set: { "games.$.wasWon": true } }
+    );
+
+    if (!theGame) {
+      res.status(404);
+      throw new Error("The game does not exist.");
+    }
+
+    if (theGame) {
+      res.send({ message: "Game has been updated successfully." });
+    }
+  } catch (error) {
+    res.status(400);
+    throw new Error("There seem to be an error. Please try agin later.");
+  }
+});
+
 module.exports = {
   createGames,
   getGames,
+  updateParticularGame,
 };
