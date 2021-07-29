@@ -99,7 +99,7 @@ const getGames = asyncHandler(async (req, res) => {
 /**
  * @description This updates the status of a particular game
  * @description It depends on param to determine the game
- * @requires The routes are PuT request of /api/games/list/game/update/:id
+ * @requires The routes are PuT request of /api/games/list/game/update/:id/?status=won || failed
  * @access This is an admin or super admin only page
  * 60e49c0b08abf003446f8217
  */
@@ -107,13 +107,19 @@ const getGames = asyncHandler(async (req, res) => {
 const updateParticularGame = asyncHandler(async (req, res) => {
   try {
     const theGameId = req.params.id;
+    const theNotice = req.query.status;
 
     const theGame = await Games.updateOne(
       {
         "games._id": theGameId,
       },
 
-      { $set: { "games.$.wasWon": true } }
+      {
+        $set: {
+          "games.$.wasWon":
+            theNotice === "won" ? true : theNotice === "failed" ? false : null,
+        },
+      }
     );
 
     if (!theGame) {

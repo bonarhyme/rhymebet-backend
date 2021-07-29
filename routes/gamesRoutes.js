@@ -16,7 +16,7 @@ router.post("/create", protect, admin, createGames);
 // api/games/list
 router.get("/list", protect, admin, getGames);
 
-// api/games/list/game/update/:id
+// /api/games/list/game/update/:id/?status=won || failed
 router.put("/list/game/update/:id", protect, admin, updateParticularGame);
 
 module.exports = router;
