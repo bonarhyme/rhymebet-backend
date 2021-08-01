@@ -8,15 +8,19 @@ const {
   createGames,
   getGames,
   updateParticularGame,
+  deleteParticularGame,
 } = require("../controllers/gameController");
 
 // api/games/create
 router.post("/create", protect, admin, createGames);
 
 // api/games/list
-router.get("/list", protect, admin, getGames);
+router.get("/list", getGames);
 
 // /api/games/list/game/update/:id/?status=won || failed
 router.put("/list/game/update/:id", protect, admin, updateParticularGame);
+
+// /api/games/list/game/delete/:id
+router.delete("/list/game/delete/:id", protect, admin, deleteParticularGame);
 
 module.exports = router;

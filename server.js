@@ -21,6 +21,7 @@ require("dotenv/config");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const gamesRoutes = require("./routes/gamesRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
 
 // Parse JSON
 app.use(express.json());
@@ -42,6 +43,9 @@ app.use("/api/user", userRoutes);
 
 //Game routes
 app.use("/api/games", gamesRoutes);
+
+//Subscriptions routes
+app.use("/api/subscriptions", subscriptionRoutes);
 
 //Not found URL middleware
 app.use(notFound);

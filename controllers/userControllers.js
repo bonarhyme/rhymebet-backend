@@ -184,6 +184,7 @@ const verifyUser = asyncHandler(async (req, res) => {
  */
 
 const loginUser = asyncHandler(async (req, res) => {
+  // console.log(req.ip);
   const { username, password } = req.body;
 
   if (!username || !password) {

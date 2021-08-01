@@ -64,6 +64,7 @@ const getGames = asyncHandler(async (req, res) => {
       "creator.creatorUsername": `${creator}`,
     });
 
+    // db.domain.find( {tag : {$exists:true}, $where:'this.tag.length>3'} )
     games = await Games.find({
       isFree,
       "creator.creatorUsername": `${creator}`,
@@ -97,11 +98,11 @@ const getGames = asyncHandler(async (req, res) => {
 });
 
 /**
- * @description This updates the status of a particular game
+ * @description This updates the status of a particular game or sets it to win or failed
  * @description It depends on param to determine the game
  * @requires The routes are PuT request of /api/games/list/game/update/:id/?status=won || failed
  * @access This is an admin or super admin only page
- * 60e49c0b08abf003446f8217
+ *
  */
 
 const updateParticularGame = asyncHandler(async (req, res) => {
@@ -132,7 +133,47 @@ const updateParticularGame = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(400);
-    throw new Error("There seem to be an error. Please try agin later.");
+    throw new Error(
+      "There seem to be an error updating the game. Please try agin later."
+    );
+  }
+});
+
+/**
+ * @description This deletes  a particular game
+ * @description It depends on param to determine the game
+ * @requires The routes are Delete request of /api/games/list/game/delete/:id
+ * @access This is an admin or super admin only page
+ *
+ */
+
+const deleteParticularGame = asyncHandler(async (req, res) => {
+  try {
+    const theGameId = req.params.id;
+
+    const theGame = await Games.updateOne(
+      { "games._id": theGameId },
+
+      {
+        $pull: {
+          games: { _id: theGameId },
+        },
+      }
+    );
+
+    if (!theGame) {
+      res.status(404);
+      throw new Error("The game does not exist.");
+    }
+
+    if (theGame) {
+      res.send({ message: "Game has been deleted successfully." });
+    }
+  } catch (error) {
+    res.status(400);
+    throw new Error(
+      "There seem to be an error deleting the game. Please try again later."
+    );
   }
 });
 
@@ -140,4 +181,5 @@ module.exports = {
   createGames,
   getGames,
   updateParticularGame,
+  deleteParticularGame,
 };
