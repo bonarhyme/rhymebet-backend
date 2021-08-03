@@ -114,6 +114,9 @@
 //     publicKey: "pk_test_e59723a0403a7fe619c62c88b775e394fe471f69",
 //   };
 
+const axios = require("axios");
+const FormData = require("form-data");
+const data = new FormData();
 const AsyncHandler = require("express-async-handler");
 const Subscription = require("../models/subscriptionModel");
 const User = require("../models/userModel");
@@ -148,7 +151,7 @@ const confirmPayment = AsyncHandler(async (req, res) => {
       amount,
       plan,
     } = req.body;
-    const { username, name, _id } = req.user;
+    const { username, name, email, _id } = req.user;
 
     const userExists = await User.findById(_id);
 
@@ -158,33 +161,72 @@ const confirmPayment = AsyncHandler(async (req, res) => {
       throw new Error("User not found.");
     }
 
-    const newSub = await new Subscription({
-      message,
-      reference,
-      status,
-      trans,
-      transaction,
-      trxref,
-      amount,
-      plan,
-      username,
-      userId: _id,
-    });
+    var config = {
+      method: "get",
+      url: `https://api.paystack.co/transaction/verify/${reference}`,
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_ACC_SECRET_KEY}`,
+        ...data.getHeaders(),
+      },
+      data: data,
+    };
 
-    const subSaved = await newSub.save();
+    axios(config)
+      .then(async function (response) {
+        const res = response.data.data;
+        const cus = response.data.data.customer;
+        const newSub = await new Subscription({
+          message,
+          reference,
+          transaction,
+          amount,
+          plan,
+          user: {
+            username,
+            userId: _id,
+            email,
+          },
+          paymentCustomer: {
+            id: cus.id,
+            first_name: cus.first_name,
+            last_name: cus.last_name,
+            email: cus.email,
+            customer_code: cus.customer_code,
+            phone: cus.phone,
+          },
+          authorization: res.authorization,
+          paymentData: {
+            domain: res.domain,
+            status: res.status,
+            reference: res.reference,
+            amount: res.amount / 100,
+            paid_at: res.paid_at,
+            created_at: res.created_at,
+            channel: res.channel,
+            currency: res.currency,
+            ip_address: res.ip_address,
+          },
+          log: res.log,
+        });
 
-    userExists.subCount = userExists.subCount + 1;
-    userExists.activeSub.active = true;
-    userExists.activeSub.createdDate = reference;
-    userExists.activeSub.plan = plan;
-    userExists.activeSub.amount = amount;
+        const subSaved = await newSub.save();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
-    const updatedUser = await userExists.save();
+    // userExists.subCount = userExists.subCount + 1;
+    // userExists.activeSub.active = true;
+    // userExists.activeSub.createdDate = reference;
+    // userExists.activeSub.plan = plan;
+    // userExists.activeSub.amount = amount;
 
-    if (updatedUser) {
-      res.send({ message: "Successfully made payment." });
-      console.log(updatedUser);
-    }
+    // const updatedUser = await userExists.save();
+
+    // if (updatedUser) {
+    //   res.send({ message: "Successfully made payment." });
+    // }
+    res.end();
   } catch (error) {
     console.log(error);
   }
