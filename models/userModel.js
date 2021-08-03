@@ -59,12 +59,42 @@ const userSchema = mongoose.Schema(
         type: String,
         default: null,
       },
+      duration: {
+        type: Number,
+        default: null,
+      },
+      expiryDate: {
+        type: String,
+        default: null,
+      },
+      expiryDateLiteral: {
+        type: String,
+        default: null,
+      },
       plan: {
         type: String,
         default: null,
       },
       amount: {
         type: Number,
+        default: null,
+      },
+      currency: {
+        type: String,
+        default: null,
+      },
+    },
+    activePromo: {
+      active: {
+        type: Boolean,
+        default: false,
+      },
+      createdDate: {
+        type: String,
+        default: null,
+      },
+      expiryDate: {
+        type: String,
         default: null,
       },
     },
