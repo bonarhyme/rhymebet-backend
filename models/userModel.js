@@ -45,6 +45,29 @@ const userSchema = mongoose.Schema(
     token: {
       type: String,
     },
+    subCount: {
+      type: Number,
+      default: 0,
+    },
+
+    activeSub: {
+      active: {
+        type: Boolean,
+        default: false,
+      },
+      createdDate: {
+        type: String,
+        default: null,
+      },
+      plan: {
+        type: String,
+        default: null,
+      },
+      amount: {
+        type: Number,
+        default: null,
+      },
+    },
   },
   {
     timestamps: true,

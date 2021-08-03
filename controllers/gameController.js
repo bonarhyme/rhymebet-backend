@@ -7,6 +7,7 @@ const asyncHandler = require("express-async-handler");
  * @access This is an admin or super admin only page
  */
 const createGames = asyncHandler(async (req, res) => {
+  console.log(req.body.games);
   const creatorId = req.user._id;
   const creatorUsername = req.user.username;
 

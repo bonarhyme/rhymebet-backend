@@ -6,7 +6,34 @@
 // transaction: "1246227632"
 // trxref: "1627816914643"
 // }
+// const options = {
+//   hostname: "api.paystack.co",
+//   port: 443,
+//   path: `/transaction/verify/1627929802742`,
+//   method: "GET",
+//   headers: {
+//     Authorization: `Bearer ${process.env.PAYSTACK_ACC_SECRET_KEY}`,
+//   },
+// };
 
+// const https = require("https");
+// try {
+//   https
+//     .request(options, (res) => {
+//       let data = "";
+//       res.on("data", (chunk) => {
+//         data += chunk;
+//       });
+//       res.on("end", () => {
+//         console.log(JSON.parse(data));
+//       });
+//     })
+//     .on("error", (error) => {
+//       console.error(error);
+//     });
+// } catch (error) {
+//   console.log(error);
+// }
 // {
 //     "status": true,
 //     "message": "Verification successful",
@@ -87,6 +114,10 @@
 //     publicKey: "pk_test_e59723a0403a7fe619c62c88b775e394fe471f69",
 //   };
 
+const AsyncHandler = require("express-async-handler");
+const Subscription = require("../models/subscriptionModel");
+const User = require("../models/userModel");
+
 /**
  * @description This sends paystack config to the frontend
  * @description The routes are GET request of /api/subscription/paystack/config
@@ -99,6 +130,67 @@ const sendPaystackConfig = (req, res) => {
   });
 };
 
+/**
+ * @description This receives and confirms the user payment
+ * @description The routes are POST request of /api/subscription/confirm
+ * @access This a private routes
+ */
+
+const confirmPayment = AsyncHandler(async (req, res) => {
+  try {
+    const {
+      message,
+      reference,
+      status,
+      trans,
+      transaction,
+      trxref,
+      amount,
+      plan,
+    } = req.body;
+    const { username, name, _id } = req.user;
+
+    const userExists = await User.findById(_id);
+
+    if (!userExists) {
+      console.log("User not found.");
+      res.status(404);
+      throw new Error("User not found.");
+    }
+
+    const newSub = await new Subscription({
+      message,
+      reference,
+      status,
+      trans,
+      transaction,
+      trxref,
+      amount,
+      plan,
+      username,
+      userId: _id,
+    });
+
+    const subSaved = await newSub.save();
+
+    userExists.subCount = userExists.subCount + 1;
+    userExists.activeSub.active = true;
+    userExists.activeSub.createdDate = reference;
+    userExists.activeSub.plan = plan;
+    userExists.activeSub.amount = amount;
+
+    const updatedUser = await userExists.save();
+
+    if (updatedUser) {
+      res.send({ message: "Successfully made payment." });
+      console.log(updatedUser);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = {
   sendPaystackConfig,
+  confirmPayment,
 };

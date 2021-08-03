@@ -4,9 +4,15 @@ const router = express.Router();
 const protect = require("../middleware/authMiddleware");
 const admin = require("../middleware/adminAuthMiddleware");
 
-const { sendPaystackConfig } = require("../controllers/subscriptionController");
+const {
+  sendPaystackConfig,
+  confirmPayment,
+} = require("../controllers/subscriptionController");
 
 // /api/subscriptions/paystack/config
 router.get("/paystack/config", sendPaystackConfig);
+
+// //api/subscriptions/confirm
+router.post("/confirm", protect, confirmPayment);
 
 module.exports = router;
