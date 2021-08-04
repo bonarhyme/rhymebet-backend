@@ -148,6 +148,49 @@ const confirmPayment = asyncHandler(async (req, res) => {
 
   res.end();
 });
+/**
+ * @description This is not a route
+ * @description It clears expired subscriptions
+ */
+setInterval(
+  (function () {
+    async function loop() {
+      const trans = await User.find({
+        "activeSub.expiryDate": {
+          $lte: Date.now(),
+        },
+      });
+
+      if (trans) {
+        trans.forEach(async (user) => {
+          const theUser = await User.findById(user._id);
+
+          // EDit the user model
+          const r = theUser.activeSub;
+
+          r.active = false;
+          r.createdDate = null;
+          r.expiryDate = null;
+          r.expiryDateLiteral = null;
+          r.plan = null;
+          r.amount = null;
+          r.currency = null;
+          r.duration = null;
+
+          const saved = await theUser.save();
+          // if (saved) {
+          //   console.log(saved);
+          // }
+        });
+      }
+    }
+
+    loop();
+    return loop;
+  })(),
+  // One hour
+  1000 * 60 * 60
+);
 
 module.exports = {
   sendPaystackConfig,
