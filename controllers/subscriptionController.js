@@ -207,7 +207,7 @@ setInterval(
  */
 
 const getActiveSubsUser = asyncHandler(async (req, res) => {
-  const pageSize = 1;
+  const pageSize = 10;
   const page = Number(req.query.pageNumber) || 1;
 
   const countSubsUser = await User.countDocuments({
@@ -266,14 +266,37 @@ const getSingleActiveSub = asyncHandler(async (req, res) => {
 });
 
 /**
- * @description This checks lists all the subscriptions
+ * @description This checks lists all the subscriptions and requires pageNumber to display pagination
  * @description The routes are GET request of /api/subscriptions/all
+ * @example /api/subscriptions/all/?pageNumber=theNumber
  * @access This a private routes for admins only
  */
+
+const getAllSubscriptions = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const count = await Subscription.countDocuments({});
+
+  const getAll = await Subscription.find()
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({
+      "activeSub.createdDate": -1,
+    });
+
+  if (getAll) {
+    res.send({ getAll, page, pages: Math.ceil(count / pageSize) });
+  } else {
+    res.status(400);
+    throw new Error("No subscriptions available.");
+  }
+});
 
 module.exports = {
   sendPaystackConfig,
   confirmPayment,
   getActiveSubsUser,
   getSingleActiveSub,
+  getAllSubscriptions,
 };
