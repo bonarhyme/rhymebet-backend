@@ -21,7 +21,7 @@ const sendPaystackConfig = (req, res) => {
 /**
  * @description This receives and confirms the user payment
  * @description The routes are POST request of /api/subscription/confirm
- * @access This a private routes
+ * @access This a private routes for users only || generous admins
  */
 
 const confirmPayment = asyncHandler(async (req, res) => {
@@ -61,9 +61,12 @@ const confirmPayment = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("User not found.");
   }
-  const userHasActiveSub = await User.find({ _id, "activeSub.active": true });
+  const userHasActiveSub = await User.find({
+    username,
+    "activeSub.active": true,
+  });
 
-  if (userHasActiveSub) {
+  if (userHasActiveSub.length > 0) {
     res.status(400);
     throw new Error(
       "You can't subscribe at the moment because you still have an active subscription."
@@ -155,14 +158,14 @@ const confirmPayment = asyncHandler(async (req, res) => {
 setInterval(
   (function () {
     async function loop() {
-      const trans = await User.find({
+      const subs = await User.find({
         "activeSub.expiryDate": {
           $lte: Date.now(),
         },
       });
 
-      if (trans) {
-        trans.forEach(async (user) => {
+      if (subs.length > 0) {
+        subs.forEach(async (user) => {
           const theUser = await User.findById(user._id);
 
           // EDit the user model
@@ -182,6 +185,8 @@ setInterval(
           //   console.log(saved);
           // }
         });
+      } else {
+        console.log("There are no expired subscriptions anymore.");
       }
     }
 
@@ -192,7 +197,46 @@ setInterval(
   1000 * 60 * 60
 );
 
+/**
+ * @description This sends the admin every user with an active subscription
+ * @description It also depends on pageNumber query to determine the pagination
+ * @description The routes are GET request of /api/subscriptions/active-subscriptions/?pageNumber=theNumber
+ * @access This a private routes for admins only
+ */
+
+const getActiveSubsUser = asyncHandler(async (req, res) => {
+  const pageSize = 1;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const countSubsUser = await User.countDocuments({
+    "activeSub.active": true,
+  });
+
+  const activeSubsUser = await User.find({
+    "activeSub.active": true,
+  })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({
+      "activeSub.createdDate": -1,
+    });
+
+  if (activeSubsUser.length > 0) {
+    res.send({
+      activeSubsUser,
+      page,
+      pages: Math.ceil(countSubsUser / pageSize),
+    });
+  } else {
+    res.status(400);
+    throw new Error(
+      "There are no user with an active subscriptions at the moment."
+    );
+  }
+});
+
 module.exports = {
   sendPaystackConfig,
   confirmPayment,
+  getActiveSubsUser,
 };
