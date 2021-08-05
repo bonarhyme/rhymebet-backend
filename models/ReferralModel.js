@@ -7,6 +7,10 @@ const referralSchema = mongoose.Schema(
       required: true,
       ref: "User",
     },
+    theReferree: {
+      type: String,
+      required: true,
+    },
     referredUsername: {
       type: String,
       required: true,

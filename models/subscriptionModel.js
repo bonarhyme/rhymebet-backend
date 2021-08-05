@@ -7,7 +7,7 @@ const subscriptionSchema = mongoose.Schema(
       required: true,
     },
     reference: { type: String, required: true },
-
+    expiryDate: { type: String, required: true },
     transaction: { type: String, required: true },
     amount: { type: Number, required: true },
     plan: { type: String, required: true },

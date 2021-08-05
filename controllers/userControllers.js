@@ -79,6 +79,7 @@ const registerUser = asyncHandler(async (req, res) => {
               const newReferral = await new Referral({
                 theReferreeUserId: referralUser._id,
                 referredUsername: newUser.username,
+                theReferree: referralUser.username,
               });
               await newReferral.save();
             }
@@ -129,7 +130,7 @@ const verifyUser = asyncHandler(async (req, res) => {
 
     if (verified) {
       const referredUser = await Referral.findOne({
-        referredUsername: user.usernamel,
+        referredUsername: user.username,
       });
       if (referredUser) {
         referredUser.isVerified = true;

@@ -90,6 +90,8 @@ const confirmPayment = asyncHandler(async (req, res) => {
       const newSub = await new Subscription({
         message,
         reference,
+        expiryDate: generateExpiryDate(Number(reference), Number(duration))
+          .expiryDateLiteral,
         transaction,
         amount,
         plan,
@@ -262,6 +264,12 @@ const getSingleActiveSub = asyncHandler(async (req, res) => {
     throw new Error("User has no active sub at the moment.");
   }
 });
+
+/**
+ * @description This checks lists all the subscriptions
+ * @description The routes are GET request of /api/subscriptions/all
+ * @access This a private routes for admins only
+ */
 
 module.exports = {
   sendPaystackConfig,
