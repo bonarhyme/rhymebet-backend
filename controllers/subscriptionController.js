@@ -62,7 +62,7 @@ const confirmPayment = asyncHandler(async (req, res) => {
     throw new Error("User not found.");
   }
   const userHasActiveSub = await User.find({
-    username,
+    _id: _id,
     "activeSub.active": true,
   });
 
@@ -235,8 +235,37 @@ const getActiveSubsUser = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description This checks if a user has an active subscription
+ * @description The routes are GET request of /api/subscriptions/active-subscriptions/:id
+ * @access This a private routes for admins only || that particular user
+ */
+
+const getSingleActiveSub = asyncHandler(async (req, res) => {
+  const user = req.user;
+  const e = req.params.id;
+
+  if (user.isAdmin || Number(user._id) === Number(e)) {
+    res.status(401);
+    throw new Error("You are not authorized to use this route.");
+  }
+
+  const userHasActiveSub = await User.findOne({
+    _id: user._id,
+    "activeSub.active": true,
+  });
+
+  if (userHasActiveSub) {
+    res.send(userHasActiveSub);
+  } else {
+    res.status(404);
+    throw new Error("User has no active sub at the moment.");
+  }
+});
+
 module.exports = {
   sendPaystackConfig,
   confirmPayment,
   getActiveSubsUser,
+  getSingleActiveSub,
 };

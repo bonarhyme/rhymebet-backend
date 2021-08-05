@@ -8,6 +8,7 @@ const {
   sendPaystackConfig,
   confirmPayment,
   getActiveSubsUser,
+  getSingleActiveSub,
 } = require("../controllers/subscriptionController");
 
 // /api/subscriptions/paystack/config
@@ -18,5 +19,8 @@ router.post("/confirm", protect, confirmPayment);
 
 // /api/subscriptions/active-subscriptions
 router.get("/active-subscriptions", protect, admin, getActiveSubsUser);
+
+// /api/subscriptions/active-subscriptions/:id
+router.get("/active-subscriptions/:id", protect, getSingleActiveSub);
 
 module.exports = router;
