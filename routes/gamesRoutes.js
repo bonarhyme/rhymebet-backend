@@ -7,6 +7,7 @@ const admin = require("../middleware/adminAuthMiddleware");
 const {
   createGames,
   getGames,
+  getPremiumGames,
   updateParticularGame,
   deleteParticularGame,
 } = require("../controllers/gameController");
@@ -16,6 +17,9 @@ router.post("/create", protect, admin, createGames);
 
 // api/games/list
 router.get("/list", getGames);
+
+// api/games/list/premium
+router.get("/list/premium", protect, getPremiumGames);
 
 // /api/games/list/game/update/:id/?status=won || failed
 router.put("/list/game/update/:id", protect, admin, updateParticularGame);

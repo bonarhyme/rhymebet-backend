@@ -36,15 +36,15 @@ const createGames = asyncHandler(async (req, res) => {
 /**
  * @description This sends the admin the list of every games posted
  * @description It depends on query param to determine if it will contains list of free games or not
- * @description It also fetches free or premium games depending on the creator's username or Id. It utiliziles keywords passed in as query to do so.
+ * @description It also fetches free depending on the creator's username or Id. It utiliziles keywords passed in as query to do so.
  * @description It also paginates the list of games if passed if pageNumber is passed
  * @requires The routes are GET request of /api/games/list
  * @example 1. /api/games/list/?isFree=false&creator=bonarhyme&pageNumber=1
- * @access This is an admin or super admin only page
+ * @access This is apublic
  */
 
 const getGames = asyncHandler(async (req, res) => {
-  const isFree = req.query.isFree;
+  const isFree = true;
   const creator = req.query.creator;
   // ? {
   //     [creator.creatorUsername]: {
@@ -96,6 +96,143 @@ const getGames = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Games not found.");
   }
+});
+
+/**
+ * @description This sends the admin the list of every premium games posted
+ * @description It depends on query param to determine if it will contains list of free games or not
+ * @description It also fetches free or premium games depending on the creator's username or Id. It utiliziles keywords passed in as query to do so.
+ * @description It also paginates the list of games if passed if pageNumber is passed
+ * @requires The routes are GET request of /api/games/list/premium
+ * @example 1. /api/games/list/premium/?isFree=false&creator=bonarhyme&pageNumber=1
+ * @access This is an admin or super admin or user with an active sub
+ */
+
+const getPremiumGames = asyncHandler(async (req, res) => {
+  let games, count;
+  const isFree = false;
+  const creator = req.query.creator;
+  const user = req.user;
+
+  const pageSize = 1;
+  const page = Number(req.query.pageNumber) || 1;
+
+  if (user.isAdmin) {
+    if (creator) {
+      count = await Games.countDocuments({
+        isFree,
+        "creator.creatorUsername": `${creator}`,
+      });
+
+      games = await Games.find({
+        isFree,
+        "creator.creatorUsername": `${creator}`,
+      })
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .sort({
+          createdAt: -1,
+        });
+    } else {
+      count = await Games.countDocuments({
+        isFree,
+      });
+
+      games = await Games.find({
+        isFree,
+      })
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .sort({
+          createdAt: -1,
+        });
+    }
+
+    if (games.length > 0) {
+      res.send({ games, page, pages: Math.ceil(count / pageSize) });
+    } else {
+      res.status(400);
+      throw new Error("Games not found.");
+    }
+  } else {
+    // active sub check
+    if (user.activeSub.active === false) {
+      count = await Games.countDocuments({
+        isFree,
+      });
+
+      games = await Games.find({
+        isFree,
+      })
+        .select([
+          "-games.win",
+          "-games.ov",
+          "-games.gg",
+          "-games.corner",
+          "-games.wasWon",
+        ])
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .sort({
+          createdAt: -1,
+        });
+
+      if (games.length > 0) {
+        res.send({ games, page, pages: Math.ceil(count / pageSize) });
+      } else {
+        res.status(400);
+        throw new Error("Games not found.");
+      }
+    } else {
+      if (creator) {
+        count = await Games.countDocuments({
+          isFree,
+          "creator.creatorUsername": `${creator}`,
+        });
+
+        games = await Games.find({
+          isFree,
+          "creator.creatorUsername": `${creator}`,
+        })
+          .limit(pageSize)
+          .skip(pageSize * (page - 1))
+          .sort({
+            createdAt: -1,
+          });
+
+        if (games.length > 0) {
+          res.send({ games, page, pages: Math.ceil(count / pageSize) });
+        } else {
+          res.status(400);
+          throw new Error("Games not found.");
+        }
+      } else {
+        count = await Games.countDocuments({
+          isFree,
+        });
+
+        games = await Games.find({
+          isFree,
+        })
+
+          .limit(pageSize)
+
+          .skip(pageSize * (page - 1))
+          .sort({
+            createdAt: -1,
+          });
+
+        if (games.length > 0) {
+          res.send({ games, page, pages: Math.ceil(count / pageSize) });
+        } else {
+          res.status(400);
+          throw new Error("Games not found.");
+        }
+      }
+    }
+    // End of active sub check
+  }
+  // end of first if
 });
 
 /**
@@ -183,4 +320,5 @@ module.exports = {
   getGames,
   updateParticularGame,
   deleteParticularGame,
+  getPremiumGames,
 };
