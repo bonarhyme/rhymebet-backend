@@ -176,13 +176,6 @@ const getPremiumGames = asyncHandler(async (req, res) => {
         .sort({
           createdAt: -1,
         });
-
-      if (games.length > 0) {
-        res.send({ games, page, pages: Math.ceil(count / pageSize) });
-      } else {
-        res.status(400);
-        throw new Error("Games not found.");
-      }
     } else {
       if (creator) {
         count = await Games.countDocuments({
@@ -199,13 +192,6 @@ const getPremiumGames = asyncHandler(async (req, res) => {
           .sort({
             createdAt: -1,
           });
-
-        if (games.length > 0) {
-          res.send({ games, page, pages: Math.ceil(count / pageSize) });
-        } else {
-          res.status(400);
-          throw new Error("Games not found.");
-        }
       } else {
         count = await Games.countDocuments({
           isFree,
@@ -221,13 +207,12 @@ const getPremiumGames = asyncHandler(async (req, res) => {
           .sort({
             createdAt: -1,
           });
-
-        if (games.length > 0) {
-          res.send({ games, page, pages: Math.ceil(count / pageSize) });
-        } else {
-          res.status(400);
-          throw new Error("Games not found.");
-        }
+      }
+      if (games.length > 0) {
+        res.send({ games, page, pages: Math.ceil(count / pageSize) });
+      } else {
+        res.status(400);
+        throw new Error("Games not found.");
       }
     }
     // End of active sub check
