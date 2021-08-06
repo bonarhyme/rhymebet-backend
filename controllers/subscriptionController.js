@@ -247,10 +247,10 @@ const getSingleActiveSub = asyncHandler(async (req, res) => {
   const user = req.user;
   const e = req.params.id;
 
-  if (user.isAdmin || Number(user._id) === Number(e)) {
-    res.status(401);
-    throw new Error("You are not authorized to use this route.");
-  }
+  // if (user.isAdmin || Number(user._id) === Number(e)) {
+  //   res.status(401);
+  //   throw new Error("You are not authorized to use this route.");
+  // }
 
   const userHasActiveSub = await User.findOne({
     _id: user._id,

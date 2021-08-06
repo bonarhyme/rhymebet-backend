@@ -22,7 +22,7 @@ router.post("/confirm", protect, confirmPayment);
 router.get("/active-subscriptions", protect, admin, getActiveSubsUser);
 
 // /api/subscriptions/active-subscriptions/:id
-router.get("/active-subscriptions/:id", protect, admin, getSingleActiveSub);
+router.get("/active-subscriptions/:id", protect, getSingleActiveSub);
 
 // /api/subscriptions/all
 router.get("/all", protect, admin, getAllSubscriptions);
