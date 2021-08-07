@@ -1,5 +1,7 @@
 const Games = require("../models/gamesModel");
 const asyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
 
 /**
  * @description This creates a new game
@@ -109,15 +111,195 @@ const getGames = asyncHandler(async (req, res) => {
  */
 
 const getPremiumGames = asyncHandler(async (req, res) => {
-  let games, count;
+  let games, count, token;
   const isFree = false;
   const creator = req.query.creator;
-  const user = req.user;
 
   const pageSize = 1;
   const page = Number(req.query.pageNumber) || 1;
 
-  if (user.isAdmin) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer") &&
+    req.headers.authorization.split(" ")[1] !== null
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select("-password");
+
+      // If user is admin
+      if (user && user.isAdmin) {
+        // If user is admin and creator passed as query
+        if (creator) {
+          count = await Games.countDocuments({
+            isFree,
+            "creator.creatorUsername": `${creator}`,
+          });
+
+          games = await Games.find({
+            isFree,
+            "creator.creatorUsername": `${creator}`,
+          })
+            .limit(pageSize)
+            .skip(pageSize * (page - 1))
+            .sort({
+              createdAt: -1,
+            });
+          // If user is admin and creator is not passed as query
+        } else {
+          count = await Games.countDocuments({
+            isFree,
+          });
+
+          games = await Games.find({
+            isFree,
+          })
+            .limit(pageSize)
+            .skip(pageSize * (page - 1))
+            .sort({
+              createdAt: -1,
+            });
+        }
+      } else {
+        // Active sub
+        if (user.activeSub.active) {
+          // If user has active sub and creator is passed as query
+          if (creator) {
+            count = await Games.countDocuments({
+              isFree,
+              "creator.creatorUsername": `${creator}`,
+            });
+
+            games = await Games.find({
+              isFree,
+              "creator.creatorUsername": `${creator}`,
+            })
+              .limit(pageSize)
+              .skip(pageSize * (page - 1))
+              .sort({
+                createdAt: -1,
+              });
+            // If user has active sub and creator is not passed as query
+          } else {
+            count = await Games.countDocuments({
+              isFree,
+            });
+
+            games = await Games.find({
+              isFree,
+            })
+              .limit(pageSize)
+              .skip(pageSize * (page - 1))
+              .sort({
+                createdAt: -1,
+              });
+          }
+          // Valid User doesn't have an active sub
+        } else {
+          //Valid User doesn't have an active sub and creator is passed
+          if (creator) {
+            count = await Games.countDocuments({
+              isFree,
+              "creator.creatorUsername": `${creator}`,
+            });
+
+            games = await Games.find({
+              isFree,
+              "creator.creatorUsername": `${creator}`,
+            })
+              .select([
+                "-games.win",
+                "-games.ov",
+                "-games.gg",
+                "-games.corner",
+                "-games.wasWon",
+              ])
+              .limit(pageSize)
+              .skip(pageSize * (page - 1))
+              .sort({
+                createdAt: -1,
+              });
+          } else {
+            // Valid User doesn't have an active sub and creator is not passed
+
+            count = await Games.countDocuments({
+              isFree,
+            });
+
+            games = await Games.find({
+              isFree,
+            })
+              .select([
+                "-games.win",
+                "-games.ov",
+                "-games.gg",
+                "-games.corner",
+                "-games.wasWon",
+              ])
+              .limit(pageSize)
+              .skip(pageSize * (page - 1))
+              .sort({
+                createdAt: -1,
+              });
+          }
+        }
+      }
+    } catch (error) {
+      console.error({
+        serverError: error.message,
+        stack: "JWT in Premium games *Game Controller* line 129",
+      });
+      // Not a valid user and creator is  passed
+      if (creator) {
+        count = await Games.countDocuments({
+          isFree,
+          "creator.creatorUsername": `${creator}`,
+        });
+
+        games = await Games.find({
+          isFree,
+          "creator.creatorUsername": `${creator}`,
+        })
+          .select([
+            "-games.win",
+            "-games.ov",
+            "-games.gg",
+            "-games.corner",
+            "-games.wasWon",
+          ])
+          .limit(pageSize)
+          .skip(pageSize * (page - 1))
+          .sort({
+            createdAt: -1,
+          });
+      } else {
+        // Not a valid user and creator is not passed
+
+        count = await Games.countDocuments({
+          isFree,
+        });
+
+        games = await Games.find({
+          isFree,
+        })
+          .select([
+            "-games.win",
+            "-games.ov",
+            "-games.gg",
+            "-games.corner",
+            "-games.wasWon",
+          ])
+          .limit(pageSize)
+          .skip(pageSize * (page - 1))
+          .sort({
+            createdAt: -1,
+          });
+      }
+    }
+    // A Visitor
+  } else {
+    // Visitor and creator is  passed
     if (creator) {
       count = await Games.countDocuments({
         isFree,
@@ -128,35 +310,21 @@ const getPremiumGames = asyncHandler(async (req, res) => {
         isFree,
         "creator.creatorUsername": `${creator}`,
       })
+        .select([
+          "-games.win",
+          "-games.ov",
+          "-games.gg",
+          "-games.corner",
+          "-games.wasWon",
+        ])
         .limit(pageSize)
         .skip(pageSize * (page - 1))
         .sort({
           createdAt: -1,
         });
     } else {
-      count = await Games.countDocuments({
-        isFree,
-      });
+      // Visitor and creator is not passed
 
-      games = await Games.find({
-        isFree,
-      })
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-        .sort({
-          createdAt: -1,
-        });
-    }
-
-    if (games.length > 0) {
-      res.send({ games, page, pages: Math.ceil(count / pageSize) });
-    } else {
-      res.status(400);
-      throw new Error("Games not found.");
-    }
-  } else {
-    // active sub check
-    if (user.activeSub.active === false) {
       count = await Games.countDocuments({
         isFree,
       });
@@ -176,48 +344,15 @@ const getPremiumGames = asyncHandler(async (req, res) => {
         .sort({
           createdAt: -1,
         });
-    } else {
-      if (creator) {
-        count = await Games.countDocuments({
-          isFree,
-          "creator.creatorUsername": `${creator}`,
-        });
-
-        games = await Games.find({
-          isFree,
-          "creator.creatorUsername": `${creator}`,
-        })
-          .limit(pageSize)
-          .skip(pageSize * (page - 1))
-          .sort({
-            createdAt: -1,
-          });
-      } else {
-        count = await Games.countDocuments({
-          isFree,
-        });
-
-        games = await Games.find({
-          isFree,
-        })
-
-          .limit(pageSize)
-
-          .skip(pageSize * (page - 1))
-          .sort({
-            createdAt: -1,
-          });
-      }
-      if (games.length > 0) {
-        res.send({ games, page, pages: Math.ceil(count / pageSize) });
-      } else {
-        res.status(400);
-        throw new Error("Games not found.");
-      }
     }
-    // End of active sub check
   }
-  // end of first if
+
+  if (games && games.length > 0) {
+    res.send({ games, page, pages: Math.ceil(count / pageSize) });
+  } else {
+    res.status(400);
+    throw new Error("Games not found.");
+  }
 });
 
 /**

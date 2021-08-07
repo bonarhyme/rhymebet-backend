@@ -11,6 +11,7 @@ const {
   updateParticularGame,
   deleteParticularGame,
 } = require("../controllers/gameController");
+const protectPremium = require("../middleware/premiumGames");
 
 // api/games/create
 router.post("/create", protect, admin, createGames);
@@ -19,7 +20,7 @@ router.post("/create", protect, admin, createGames);
 router.get("/list", getGames);
 
 // api/games/list/premium
-router.get("/list/premium", protect, getPremiumGames);
+router.get("/list/premium", getPremiumGames);
 
 // /api/games/list/game/update/:id/?status=won || failed
 router.put("/list/game/update/:id", protect, admin, updateParticularGame);
