@@ -22,6 +22,7 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const gamesRoutes = require("./routes/gamesRoutes");
 const subscriptionRoutes = require("./routes/subscriptionRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 // Parse JSON
 app.use(express.json());
@@ -46,6 +47,9 @@ app.use("/api/games", gamesRoutes);
 
 //Subscriptions routes
 app.use("/api/subscriptions", subscriptionRoutes);
+
+// Admin routes
+app.use("/api/admin", adminRoutes);
 
 //Not found URL middleware
 app.use(notFound);
