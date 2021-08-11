@@ -163,7 +163,7 @@ const getPremiumGames = asyncHandler(async (req, res) => {
         }
       } else {
         // Active sub
-        if (user.activeSub.active) {
+        if (user && user.activeSub.active) {
           // If user has active sub and creator is passed as query
           if (creator) {
             count = await Games.countDocuments({

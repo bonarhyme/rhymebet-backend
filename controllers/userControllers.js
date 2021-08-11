@@ -317,6 +317,9 @@ const resetPassword = asyncHandler(async (req, res) => {
 const checkToken = asyncHandler(async (req, res) => {
   if (req.user) {
     res.send({ message: "User's token is valid." });
+  } else {
+    res.status(404);
+    throw new Error("User is invalid.");
   }
 });
 

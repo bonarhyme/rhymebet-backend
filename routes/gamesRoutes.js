@@ -11,7 +11,6 @@ const {
   updateParticularGame,
   deleteParticularGame,
 } = require("../controllers/gameController");
-const protectPremium = require("../middleware/premiumGames");
 
 // api/games/create
 router.post("/create", protect, admin, createGames);

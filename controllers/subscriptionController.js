@@ -251,7 +251,10 @@ const getSingleActiveSub = asyncHandler(async (req, res) => {
   //   res.status(401);
   //   throw new Error("You are not authorized to use this route.");
   // }
-
+  if (!user) {
+    res.status(404);
+    throw new Error("You have no active sub at the moment.");
+  }
   const userHasActiveSub = await User.findOne({
     _id: user._id,
     "activeSub.active": true,
@@ -261,7 +264,7 @@ const getSingleActiveSub = asyncHandler(async (req, res) => {
     res.send(userHasActiveSub);
   } else {
     res.status(404);
-    throw new Error("User has no active sub at the moment.");
+    throw new Error("You have no active sub at the moment.");
   }
 });
 
