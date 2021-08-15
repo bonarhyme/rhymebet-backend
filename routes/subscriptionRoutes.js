@@ -10,6 +10,7 @@ const {
   getActiveSubsUser,
   getSingleActiveSub,
   getAllSubscriptions,
+  getUserAllSubscriptions,
 } = require("../controllers/subscriptionController");
 
 // /api/subscriptions/paystack/config
@@ -26,5 +27,8 @@ router.get("/active-subscriptions/:id", protect, getSingleActiveSub);
 
 // /api/subscriptions/all
 router.get("/all", protect, admin, getAllSubscriptions);
+
+// /api/subscriptions/user
+router.get("/user", protect, getUserAllSubscriptions);
 
 module.exports = router;

@@ -312,10 +312,57 @@ const getAllSubscriptions = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description This lists all the subscriptions for a particular user and requires pageNumber to display pagination
+ * @description The routes are GET request of /api/subscriptions/user
+ * @example /api/subscriptions/user/:id/?pageNumber=theNumber
+ * @access This a private routes for users
+ */
+
+const getUserAllSubscriptions = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber) || 1;
+  const user = req.user;
+
+  const count = await Subscription.countDocuments({ "user.userId": user._id });
+
+  const getUserAll = await Subscription.find({ "user.userId": user._id })
+    .select([
+      "-message",
+      "-paymentCustomer",
+      "-authorization",
+      "-log",
+      "-transaction",
+      "-user",
+      "-transaction",
+      "-paymentData.domain",
+      "-paymentData.status",
+      "-paymentData.reference",
+      "-paymentData.amount",
+      "-paymentData.paid_at",
+      "-paymentData.created_at",
+      "-paymentData.ip_address",
+      "-paymentData.channel",
+    ])
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({
+      createdAt: -1,
+    });
+
+  if (getUserAll) {
+    res.send({ getUserAll, page, pages: Math.ceil(count / pageSize) });
+  } else {
+    res.status(400);
+    throw new Error("No subscriptions available.");
+  }
+});
+
 module.exports = {
   sendPaystackConfig,
   confirmPayment,
   getActiveSubsUser,
   getSingleActiveSub,
   getAllSubscriptions,
+  getUserAllSubscriptions,
 };
