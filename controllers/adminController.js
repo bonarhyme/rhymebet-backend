@@ -14,7 +14,7 @@ const getAllUser = asyncHandler(async (req, res) => {
 
   const count = await User.countDocuments({});
   const allUsers = await User.find({ isSuperAdmin: false })
-    .select(["-password", "-subCount", "-token", "-isSuperAdmin"])
+    .select(["-password", "-token", "-isSuperAdmin"])
     .limit(pageSize)
     .skip(pageSize * (page - 1))
     .sort({

@@ -364,6 +364,14 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     if (updatedUser) {
       res.send({
         message: "Your profile has been updated successfully.",
+
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        isAdmin: updatedUser.isAdmin,
+        isSuperAdmin: updatedUser.isSuperAdmin,
+        token: generateToken(updatedUser._id),
       });
     }
   } else {

@@ -217,6 +217,14 @@ const getActiveSubsUser = asyncHandler(async (req, res) => {
   const activeSubsUser = await User.find({
     "activeSub.active": true,
   })
+    .select([
+      "-password",
+      "-token",
+      "-createdAt",
+      "-updatedAt",
+      "-isAdmin",
+      "-isSuperAdmin",
+    ])
     .limit(pageSize)
     .skip(pageSize * (page - 1))
     .sort({
@@ -258,7 +266,15 @@ const getSingleActiveSub = asyncHandler(async (req, res) => {
   const userHasActiveSub = await User.findOne({
     _id: user._id,
     "activeSub.active": true,
-  });
+  }).select([
+    "-password",
+    "-token",
+    "-createdAt",
+    "-updatedAt",
+    "-isAdmin",
+    "-isSuperAdmin",
+    "-isVerified",
+  ]);
 
   if (userHasActiveSub) {
     res.send(userHasActiveSub);
