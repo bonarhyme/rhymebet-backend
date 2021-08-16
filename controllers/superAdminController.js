@@ -38,12 +38,28 @@ const getRegularUsers = asyncHandler(async (req, res) => {
  * @access This is an super admin only page
  */
 
-// const makeAdmin = asyncHandler(async(req, res) => {
-//     const id = req.params.id
+const makeAdmin = asyncHandler(async (req, res) => {
+  const id = req.params.id;
 
-//     const user =
-// })
+  const user = await User.findById(id);
+
+  if (user) {
+    user.isAdmin = true;
+    const updated = await user.save();
+
+    if (updated) {
+      res.send({ message: `${user.name} has been made an admin` });
+    } else {
+      res.status(404);
+      throw new Error(`Failed to make user: ${user.name} an admin`);
+    }
+  } else {
+    res.status(404);
+    throw new Error("User does not exist in our system.");
+  }
+});
 
 module.exports = {
   getRegularUsers,
+  makeAdmin,
 };
