@@ -8,6 +8,7 @@ const {
   getRegularUsers,
   makeAdmin,
   getAdminUsers,
+  demoteAdmin,
 } = require("../controllers/superAdminController");
 
 // /api/super-admin/users/regular/
@@ -18,5 +19,8 @@ router.put("/users/regular/:id", protect, superAdmin, makeAdmin);
 
 // /api/super-admin/users/admin/:id
 router.get("/users/admin", protect, superAdmin, getAdminUsers);
+
+// /api/super-admin/users/admin/:id/remove
+router.put("/users/admin/:id/remove", protect, superAdmin, demoteAdmin);
 
 module.exports = router;

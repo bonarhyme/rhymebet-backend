@@ -90,8 +90,36 @@ const makeAdmin = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description This removes a user as an admin
+ * @description The routes are PUT request of /api/super-admin/users/admin/:id/remove
+ * @access This is an super admin only page
+ */
+
+const demoteAdmin = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+
+  const user = await User.findById(id);
+
+  if (user) {
+    user.isAdmin = false;
+    const updated = await user.save();
+
+    if (updated) {
+      res.send({ message: `${user.name} has been removed as  an admin` });
+    } else {
+      res.status(404);
+      throw new Error(`Failed to remove user: ${user.name} an admin`);
+    }
+  } else {
+    res.status(404);
+    throw new Error("User does not exist in our system.");
+  }
+});
+
 module.exports = {
   getRegularUsers,
   makeAdmin,
   getAdminUsers,
+  demoteAdmin,
 };
