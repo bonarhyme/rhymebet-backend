@@ -23,6 +23,7 @@ const userRoutes = require("./routes/userRoutes");
 const gamesRoutes = require("./routes/gamesRoutes");
 const subscriptionRoutes = require("./routes/subscriptionRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const referralRoutes = require("./routes/referralRoutes");
 
 // Parse JSON
 app.use(express.json());
@@ -50,6 +51,9 @@ app.use("/api/subscriptions", subscriptionRoutes);
 
 // Admin routes
 app.use("/api/admin", adminRoutes);
+
+// Referral routes
+app.use("/api/referral", referralRoutes);
 
 //Not found URL middleware
 app.use(notFound);
