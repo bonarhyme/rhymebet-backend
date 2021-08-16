@@ -64,7 +64,7 @@ const getUserReferrals = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(400);
-    throw new Error("No referrals found.");
+    throw new Error("You have no referrals at the moment.");
   }
 });
 

@@ -12,7 +12,7 @@ const getAllUser = asyncHandler(async (req, res) => {
   const pageSize = 20;
   const page = Number(req.query.pageNumber);
 
-  const count = await User.countDocuments({});
+  const count = await User.countDocuments({ isSuperAdmin: false });
   const allUsers = await User.find({ isSuperAdmin: false })
     .select(["-password", "-token", "-isSuperAdmin"])
     .limit(pageSize)

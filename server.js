@@ -24,6 +24,7 @@ const gamesRoutes = require("./routes/gamesRoutes");
 const subscriptionRoutes = require("./routes/subscriptionRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const referralRoutes = require("./routes/referralRoutes");
+const superAdminRoutes = require("./routes/superAdminRoutes");
 
 // Parse JSON
 app.use(express.json());
@@ -54,6 +55,9 @@ app.use("/api/admin", adminRoutes);
 
 // Referral routes
 app.use("/api/referral", referralRoutes);
+
+// Super Admin routes
+app.use("/api/super-admin", superAdminRoutes);
 
 //Not found URL middleware
 app.use(notFound);

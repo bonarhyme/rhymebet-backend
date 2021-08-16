@@ -1,0 +1,49 @@
+const asyncHandler = require("express-async-handler");
+const User = require("../models/userModel");
+
+/**
+ * @description This gets all regular users
+ * @description The routes are GET request of /api/super-admin/users/regular/?pageNumber=theNumber
+ * @description It depends on pageNumber passed as the query
+ * @access This is an super admin only page
+ */
+
+const getRegularUsers = asyncHandler(async (req, res) => {
+  const pageSize = 20;
+  const page = Number(req.query.pageNumber);
+
+  const count = await User.countDocuments({
+    isSuperAdmin: false,
+    isAdmin: false,
+  });
+  const allUsers = await User.find({ isSuperAdmin: false, isAdmin: false })
+    .select(["-password", "-token", "-isSuperAdmin"])
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({
+      createdAt: -1,
+    });
+
+  if (allUsers) {
+    res.send({ allUsers, page, pages: Math.ceil(count / pageSize) });
+  } else {
+    res.status(404);
+    throw new Error("No user was found.");
+  }
+});
+
+/**
+ * @description This makes a user an admin
+ * @description The routes are PUT request of /api/super-admin/users/regular/:id
+ * @access This is an super admin only page
+ */
+
+// const makeAdmin = asyncHandler(async(req, res) => {
+//     const id = req.params.id
+
+//     const user =
+// })
+
+module.exports = {
+  getRegularUsers,
+};
