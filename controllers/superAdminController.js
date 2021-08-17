@@ -117,9 +117,69 @@ const demoteAdmin = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description This gets all super admin users
+ * @description The routes are GET request of /api/super-admin/users/super-admin/?pageNumber=theNumber
+ * @description It depends on pageNumber passed as the query
+ * @access This is an super admin only page
+ */
+
+const getSuperAdminUsers = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber);
+
+  const count = await User.countDocuments({
+    isSuperAdmin: true,
+  });
+
+  const allUsers = await User.find({ isSuperAdmin: true })
+    .select(["-password", "-token"])
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({
+      createdAt: -1,
+    });
+
+  if (allUsers) {
+    res.send({ allUsers, page, pages: Math.ceil(count / pageSize) });
+  } else {
+    res.status(404);
+    throw new Error("No user was found.");
+  }
+});
+
+/**
+ * @description This makes a user a super admin
+ * @description The routes are PUT request of /api/super-admin/users/admin/:id
+ * @access This is an super admin only page
+ */
+
+const makeSuperAdmin = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+
+  const user = await User.findById(id);
+
+  if (user && user.isAdmin) {
+    user.isSuperAdmin = true;
+    const updated = await user.save();
+
+    if (updated) {
+      res.send({ message: `${user.name} has been made a super admin` });
+    } else {
+      res.status(404);
+      throw new Error(`Failed to make user: ${user.name} a super admin`);
+    }
+  } else {
+    res.status(404);
+    throw new Error("User does not exist in our system.");
+  }
+});
+
 module.exports = {
   getRegularUsers,
   makeAdmin,
   getAdminUsers,
   demoteAdmin,
+  getSuperAdminUsers,
+  makeSuperAdmin,
 };
