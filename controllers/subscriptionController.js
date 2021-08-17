@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const Subscription = require("../models/subscriptionModel");
 const User = require("../models/userModel");
 const generateExpiryDate = require("../utility/generateExpiryDate");
+const ReferralModel = require("../models/ReferralModel");
 
 /**
  * @description This sends paystack config to the frontend
@@ -357,6 +358,77 @@ const getUserAllSubscriptions = asyncHandler(async (req, res) => {
     throw new Error("No subscriptions available.");
   }
 });
+
+/**
+ * @description This is not a route
+ * @description It checks referrals and adds bonus
+ */
+const pageSize = 10;
+
+setInterval(
+  (function () {
+    async function loop() {
+      const users = await User.find({
+        isSuperAdmin: false,
+        isAdmin: false,
+        isVerified: true,
+        "activeSub.active": false,
+        "activePromo.active": false,
+      });
+
+      if (users && users.length > 0) {
+        users.forEach(async (user) => {
+          const userRef = await ReferralModel.find({
+            theReferree: user.username,
+            isVerified: true,
+            isReferralPaid: false,
+          }).limit(pageSize);
+
+          if (userRef.length === 10) {
+            userRef.map(async (ref) => {
+              const theRef = await ReferralModel.findOne({
+                referredUsername: ref.referredUsername,
+              });
+              if (theRef) {
+                theRef.isReferralPaid = true;
+                await theRef.save();
+              } else {
+                console.log("Failed to update referral model.");
+              }
+            });
+
+            const luckyUser = await User.findOne({
+              _id: user._id,
+            });
+
+            if (luckyUser) {
+              luckyUser.activePromo.active = true;
+              luckyUser.activePromo.createdDate = Date.now();
+              luckyUser.activePromo.expiryDate =
+                Date.now() + 24 * 60 * 60 * 1000;
+
+              const promoSaved = await luckyUser.save();
+
+              if (promoSaved) {
+                console.log(`Promo saved for ${luckyUser.name}`);
+              }
+            }
+          }
+          // else {
+          //   console.log("User Referrals not upto 10.");
+          // }
+        });
+      } else {
+        console.log("There are no users with up to 10 unsettled referrals.");
+      }
+    }
+
+    loop();
+    return loop;
+  })(),
+  // One hour
+  1000 * 60 * 60
+);
 
 module.exports = {
   sendPaystackConfig,
