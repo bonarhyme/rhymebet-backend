@@ -9,7 +9,7 @@ const User = require("../models/userModel");
  */
 
 const getAllUser = asyncHandler(async (req, res) => {
-  const pageSize = 20;
+  const pageSize = 10;
   const page = Number(req.query.pageNumber);
 
   const count = await User.countDocuments({ isSuperAdmin: false });

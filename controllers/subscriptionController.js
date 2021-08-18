@@ -189,7 +189,7 @@ setInterval(
           // }
         });
       } else {
-        console.log("There are no expired subscriptions anymore.");
+        console.log("There are no expired subscriptions at the moment.");
       }
     }
 
@@ -420,6 +420,47 @@ setInterval(
         });
       } else {
         console.log("There are no users with up to 10 unsettled referrals.");
+      }
+    }
+
+    loop();
+    return loop;
+  })(),
+  // One hour
+  1000 * 60 * 60
+);
+
+/**
+ * @description This is not a route
+ * @description It clears expired promo
+ */
+setInterval(
+  (function () {
+    async function loop() {
+      const subs = await User.find({
+        "activePromo.expiryDate": {
+          $lte: Date.now(),
+        },
+      });
+
+      if (subs.length > 0) {
+        subs.forEach(async (user) => {
+          const theUser = await User.findById(user._id);
+
+          // EDit the user model
+          const r = theUser.activePromo;
+
+          r.active = false;
+          r.createdDate = null;
+          r.expiryDate = null;
+
+          const saved = await theUser.save();
+          if (saved) {
+            console.log("Promo expired and removed successfully.");
+          }
+        });
+      } else {
+        console.log("There are no expired Promo at the moment.");
       }
     }
 
