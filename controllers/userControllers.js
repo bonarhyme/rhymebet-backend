@@ -150,32 +150,42 @@ const verifyUser = asyncHandler(async (req, res) => {
   res.end();
 });
 
-// /**
-//  * @description This sends the user a verification email again
-//  * @description The routes are PUT request of /api/user/verify-user
-//  * @required reqbody.username and req.body.token
-//  * @access This a public routes
-//  */
-// const sendVerificationAgain = async (req, res) => {
-//   console.log("Route Hit");
-//   const { email } = req.body;
+/**
+ * @description This sends the user a verification email again
+ * @description The routes are POST request of /api/user/send-verification/again
+ * @required reqbody.username
+ * @access This a public routes
+ */
+const sendVerificationAgain = asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-//   const emailExist = await User.findOne({
-//     email,
-//   });
+  const emailExist = await User.findOne({
+    email,
+  });
 
-//   if (!emailExist) {
-//     res.send({ error: "Email does not exist. Please check your spelling." });
-//   }
+  const emailVerified = await User.findOne({
+    email,
+    isVerified: true,
+  });
 
-//   if (emailExist) {
-//     confirmEmail(emailExist);
-//     res.send({
-//       message:
-//         "An email containing your verification code has been sent to your email.",
-//     });
-//   }
-// };
+  if (emailVerified) {
+    res.status(400);
+    throw new Error("User already verified.");
+  }
+
+  if (!emailExist) {
+    res.status(404);
+    throw new Error("Email does not exist. Please check your spelling.");
+  }
+
+  if (emailExist) {
+    confirmEmail(emailExist);
+    res.send({
+      message:
+        "An email containing your verification code has been sent to your email again.",
+    });
+  }
+});
 
 /**
  * @description This allows a user to login
@@ -433,4 +443,5 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   updatePassword,
+  sendVerificationAgain,
 };

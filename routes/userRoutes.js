@@ -11,6 +11,7 @@ const {
   getUserProfile,
   updateUserProfile,
   updatePassword,
+  sendVerificationAgain,
 } = require("../controllers/userControllers");
 const protect = require("../middleware/authMiddleware");
 const {
@@ -45,5 +46,8 @@ router.post("/forgot-password", checkEmail, forgotPassword);
 
 // api/users/reset-password
 router.post("/reset-password", checkPassword, resetPassword);
+
+// /api/user/send-verification/again
+router.post("/send-verification/again", checkEmail, sendVerificationAgain);
 
 module.exports = router;
