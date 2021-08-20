@@ -3,12 +3,20 @@ const asyncHandler = require("express-async-handler");
 
 const cloudinaryImp = require("../utility/imageUpload");
 const News = require("../models/newsModel");
+const NewsModel = require("../models/newsModel");
 
 const createNews = asyncHandler(async (req, res) => {
   try {
     let pictureFiles = req.files;
     let user = req.user;
     let { title, fullStory } = req.body;
+
+    const findNews = await NewsModel.findOne({ title });
+
+    if (findNews) {
+      res.status(400);
+      throw new Error("Please use another title.");
+    }
 
     if (!pictureFiles) {
       res.status(400);
@@ -34,6 +42,10 @@ const createNews = asyncHandler(async (req, res) => {
       title,
       fullStory,
       images: imagesUrl,
+      poster: {
+        username: user.username,
+        userId: user._id,
+      },
     });
 
     if (newNews) {
@@ -48,7 +60,7 @@ const createNews = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    console.log(error);
+    // console.log(error);
     throw new Error(error.message);
   }
 });
