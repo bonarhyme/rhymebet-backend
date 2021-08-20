@@ -5,6 +5,12 @@ const cloudinaryImp = require("../utility/imageUpload");
 const News = require("../models/newsModel");
 const NewsModel = require("../models/newsModel");
 
+/**
+ * @description This creates news and adds image to cloudinary
+ * @description The routes are GET request of /api/news/create
+ * @access This is for admins alone
+ */
+
 const createNews = asyncHandler(async (req, res) => {
   try {
     let pictureFiles = req.files;
@@ -65,4 +71,31 @@ const createNews = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createNews };
+/**
+ * @description This checks lists all the news and requires pageNumber to display pagination
+ * @description The routes are GET request of /api/news/all
+ * @example /api/news/all/?pageNumber=theNumber
+ */
+const getNews = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const count = await NewsModel.countDocuments({});
+
+  const allNews = await NewsModel.find({})
+    .select("-comment")
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .sort({
+      createdAt: -1,
+    });
+
+  if (allNews) {
+    res.send({ allNews, page, pages: Math.ceil(count / pageSize) });
+  } else {
+    res.status(400);
+    throw new Error("No news available.");
+  }
+});
+
+module.exports = { createNews, getNews };
