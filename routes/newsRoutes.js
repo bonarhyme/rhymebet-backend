@@ -9,6 +9,7 @@ const {
   getNews,
   getSingleNews,
   createComment,
+  replyComment,
 } = require("../controllers/newsController");
 const admin = require("../middleware/adminAuthMiddleware");
 const protect = require("../middleware/authMiddleware");
@@ -35,5 +36,8 @@ router.get("/:id", getSingleNews);
 
 //  /api/news/comment/:id/
 router.post("/comment/:id", comment, createComment);
+
+//  /api/news/comment/:id/:commentId
+router.post("/comment/:id/:commentId", comment, replyComment);
 
 module.exports = router;

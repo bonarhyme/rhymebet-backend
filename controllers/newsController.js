@@ -119,8 +119,8 @@ const getSingleNews = asyncHandler(async (req, res) => {
 });
 
 /**
- * @description This post single news
- * @description The routes are GET request of /api/news/:id
+ * @description This post a new comment
+ * @description The routes are POST request of /api/news/comment/:id/
  * @example /api/news/comment/:id/
  * @access This is for everyone
  */
@@ -159,4 +159,52 @@ const createComment = asyncHandler(async (req, res) => {
     throw new Error("You cannot comment on this post now.");
   }
 });
-module.exports = { createNews, getNews, getSingleNews, createComment };
+/**
+ * @description This post replies to comment
+ * @description The routes are POST request of /api/news/comment/:id/:commentId
+ * @example /api/news/comment/:id/:commentId
+ * @access This is for everyone
+ */
+
+const replyComment = asyncHandler(async (req, res) => {
+  const newsId = req.params.id;
+  const commentId = req.params.commentId;
+  const user = req.user;
+  const { reply } = req.body;
+
+  const news = await NewsModel.findById(newsId);
+
+  if (news) {
+    const replyNow = await NewsModel.updateOne(
+      { _id: newsId, "comment._id": commentId },
+      {
+        $push: {
+          "comment.$.replies": {
+            username: user.username,
+            reply: reply,
+          },
+        },
+      }
+    );
+
+    if (replyNow) {
+      res.send({
+        message: "Your reply has been posted successfully.",
+        replyNow,
+      });
+    } else {
+      res.status(404);
+      throw new Error("Failed to post reply. Please try again later.");
+    }
+  } else {
+    res.status(404);
+    throw new Error("You cannot reply on this post now.");
+  }
+});
+module.exports = {
+  createNews,
+  getNews,
+  getSingleNews,
+  createComment,
+  replyComment,
+};
