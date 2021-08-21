@@ -75,6 +75,7 @@ const createNews = asyncHandler(async (req, res) => {
  * @description This checks lists all the news and requires pageNumber to display pagination
  * @description The routes are GET request of /api/news/all
  * @example /api/news/all/?pageNumber=theNumber
+ * @access This is for the public
  */
 const getNews = asyncHandler(async (req, res) => {
   const pageSize = 10;
@@ -116,4 +117,46 @@ const getSingleNews = asyncHandler(async (req, res) => {
     throw new Error("News not found.");
   }
 });
-module.exports = { createNews, getNews, getSingleNews };
+
+/**
+ * @description This post single news
+ * @description The routes are GET request of /api/news/:id
+ * @example /api/news/comment/:id/
+ * @access This is for everyone
+ */
+
+const createComment = asyncHandler(async (req, res) => {
+  const newsId = req.params.id;
+  const user = req.user;
+  const { comment } = req.body;
+
+  const news = await NewsModel.findById(newsId);
+
+  if (news) {
+    const commentNow = await NewsModel.updateOne(
+      { _id: newsId },
+      {
+        $push: {
+          comment: {
+            username: user.username,
+            comment: comment,
+          },
+        },
+      }
+    );
+
+    if (commentNow) {
+      res.send({
+        message: "Your comment has been posted successfully.",
+        // commentNow,
+      });
+    } else {
+      res.status(404);
+      throw new Error("Failed to post comment. Please try again later.");
+    }
+  } else {
+    res.status(404);
+    throw new Error("You cannot comment on this post now.");
+  }
+});
+module.exports = { createNews, getNews, getSingleNews, createComment };

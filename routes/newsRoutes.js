@@ -8,9 +8,11 @@ const {
   createNews,
   getNews,
   getSingleNews,
+  createComment,
 } = require("../controllers/newsController");
 const admin = require("../middleware/adminAuthMiddleware");
 const protect = require("../middleware/authMiddleware");
+const comment = require("../middleware/commentMiddleware");
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
@@ -30,5 +32,8 @@ router.get("/all", getNews);
 
 //  /api/news/:id/
 router.get("/:id", getSingleNews);
+
+//  /api/news/comment/:id/
+router.post("/comment/:id", comment, createComment);
 
 module.exports = router;
