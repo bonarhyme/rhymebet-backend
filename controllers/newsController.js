@@ -32,8 +32,8 @@ const createNews = asyncHandler(async (req, res) => {
     let multiplePicturePromise = pictureFiles.map((picture, index) =>
       cloudinaryImp.uploader.upload(picture.path, {
         public_id: `${Date.now()}_${user.username}_${index}`,
-        height: 600,
-        width: 600,
+        height: 400,
+        width: 400,
         crop: "fill",
       })
     );
@@ -98,4 +98,22 @@ const getNews = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createNews, getNews };
+/**
+ * @description This gets single news
+ * @description The routes are GET request of /api/news/:id
+ * @example /api/news/:id/
+ */
+
+const getSingleNews = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+
+  const news = await NewsModel.findById(id);
+
+  if (news) {
+    res.send(news);
+  } else {
+    res.status(404);
+    throw new Error("News not found.");
+  }
+});
+module.exports = { createNews, getNews, getSingleNews };

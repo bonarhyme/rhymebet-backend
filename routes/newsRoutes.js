@@ -4,7 +4,11 @@ const router = express.Router();
 const multer = require("multer");
 const storage = multer.diskStorage({});
 
-const { createNews, getNews } = require("../controllers/newsController");
+const {
+  createNews,
+  getNews,
+  getSingleNews,
+} = require("../controllers/newsController");
 const admin = require("../middleware/adminAuthMiddleware");
 const protect = require("../middleware/authMiddleware");
 
@@ -23,5 +27,8 @@ router.post("/create", protect, admin, upload.array("image"), createNews);
 
 //  /api/news/all
 router.get("/all", getNews);
+
+//  /api/news/:id/
+router.get("/:id", getSingleNews);
 
 module.exports = router;
