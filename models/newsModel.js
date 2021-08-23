@@ -1,6 +1,8 @@
 // title, image, fullStory
 const mongoose = require("mongoose");
 
+const date = new Date();
+
 const replySchema = mongoose.Schema(
   {
     username: {
@@ -10,6 +12,10 @@ const replySchema = mongoose.Schema(
     reply: {
       type: String,
       default: "",
+    },
+    createdAt: {
+      type: String,
+      default: date,
     },
   },
   { timestamps: true }
