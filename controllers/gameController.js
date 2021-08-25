@@ -95,7 +95,7 @@ const getGames = asyncHandler(async (req, res) => {
   if (games.length > 0) {
     res.send({ games, page, pages: Math.ceil(count / pageSize) });
   } else {
-    res.status(400);
+    res.status(404);
     throw new Error("Games not found.");
   }
 });
@@ -350,7 +350,7 @@ const getPremiumGames = asyncHandler(async (req, res) => {
   if (games && games.length > 0) {
     res.send({ games, page, pages: Math.ceil(count / pageSize) });
   } else {
-    res.status(400);
+    res.status(404);
     throw new Error("Games not found.");
   }
 });

@@ -208,7 +208,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const usernameExist = await User.findOne({ username });
 
   if (!usernameExist) {
-    res.status(400);
+    res.status(404);
     throw new Error(
       "User does not exist in our system. Please check your spelling."
     );

@@ -308,7 +308,7 @@ const getAllSubscriptions = asyncHandler(async (req, res) => {
   if (getAll) {
     res.send({ getAll, page, pages: Math.ceil(count / pageSize) });
   } else {
-    res.status(400);
+    res.status(404);
     throw new Error("No subscriptions available.");
   }
 });
@@ -354,7 +354,7 @@ const getUserAllSubscriptions = asyncHandler(async (req, res) => {
   if (getUserAll) {
     res.send({ getUserAll, page, pages: Math.ceil(count / pageSize) });
   } else {
-    res.status(400);
+    res.status(404);
     throw new Error("No subscriptions available.");
   }
 });

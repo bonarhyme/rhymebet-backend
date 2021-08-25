@@ -63,7 +63,7 @@ const getUserReferrals = asyncHandler(async (req, res) => {
       pages: Math.ceil(count / pageSize),
     });
   } else {
-    res.status(400);
+    res.status(404);
     throw new Error("You have no referrals at the moment.");
   }
 });

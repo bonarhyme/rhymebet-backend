@@ -94,7 +94,7 @@ const getNews = asyncHandler(async (req, res) => {
   if (allNews) {
     res.send({ allNews, page, pages: Math.ceil(count / pageSize) });
   } else {
-    res.status(400);
+    res.status(404);
     throw new Error("No news available.");
   }
 });
