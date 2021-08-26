@@ -16,7 +16,7 @@ const forgotPasswordEmail = (user) => {
     to: `${user.email}`,
     subject: "Password Reset",
     html: `
-    <h1 style="color: #3498db">${variables.rhymebetLogo}</h1>
+    <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="150" height="auto" style="color: #3498db, margin: 2rem auto, object-fit: contain;" >
     <h2>This is your password reset email.</h2>
     <p>Click on the link below to reset your password.</p>
     <button

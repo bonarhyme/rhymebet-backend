@@ -17,7 +17,7 @@ const confirmEmail = (user) => {
       to: `${user.email}`,
       subject: "Account Email Validation",
       html: `
-    <h1 style="color: #3498db">${variables.rhymebetLogo}</h1>
+      <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="150" height="auto" style="color: #3498db, margin: 2rem auto, object-fit: contain;" >
     <h2>This is your account activation email</h2>
     <p>Copy the code below and enter it in the field provided in rhymebet.com or click on verify account to open a form where you can put your registered username and this code below.</p>
     
