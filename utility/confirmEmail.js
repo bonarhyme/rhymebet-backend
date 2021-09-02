@@ -19,7 +19,7 @@ const confirmEmail = (user) => {
       to: `${user.email}`,
       subject: "Account Email Validation",
       html: `
-      <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;"  >
+      <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png " width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;" alt="rhymebet logo" >
     <h2>This is your account activation email</h2>
     <p>Copy the code below and enter it in the field provided in rhymebet.com/verify or click  <a href="https://rhymebet.com/verify">here to verify your account</a> </p>
     
