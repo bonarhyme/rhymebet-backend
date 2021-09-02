@@ -5,7 +5,9 @@ let count = 0;
 const confirmEmail = (user) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "hotmail",
+      // service: "hotmail",
+      host: "mail.privateemail.com",
+      port: 587,
       auth: {
         user: `${process.env.EMAIL_USERNAME}`,
         pass: `${process.env.EMAIL_PASSWORD}`,
@@ -17,11 +19,13 @@ const confirmEmail = (user) => {
       to: `${user.email}`,
       subject: "Account Email Validation",
       html: `
-      <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="150" height="auto" style="color: #3498db, margin: 2rem auto, object-fit: contain;" >
+      <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;"  >
     <h2>This is your account activation email</h2>
-    <p>Copy the code below and enter it in the field provided in rhymebet.com or click on verify account to open a form where you can put your registered username and this code below.</p>
+    <p>Copy the code below and enter it in the field provided in rhymebet.com/verify or click  <a href="https://rhymebet.com/verify">here to verify your account</a> </p>
     
     <p style="padding: 1.5rem; margin: 2rem auto; border: 1px solid lightblue; text-align: center;">${user.token}</p>
+    
+    <
     <br /><br />
 
     <i style="color: #ff3d1b">This code expires soon.</i>

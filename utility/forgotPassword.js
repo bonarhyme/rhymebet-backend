@@ -4,7 +4,9 @@ const variables = require("../data/appData");
 let count = 0;
 const forgotPasswordEmail = (user) => {
   const transporter = nodemailer.createTransport({
-    service: "hotmail",
+    // service: "hotmail",
+    host: "mail.privateemail.com",
+    port: 587,
     auth: {
       user: `${process.env.EMAIL_USERNAME}`,
       pass: `${process.env.EMAIL_PASSWORD}`,
@@ -16,7 +18,7 @@ const forgotPasswordEmail = (user) => {
     to: `${user.email}`,
     subject: "Password Reset",
     html: `
-    <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="150" height="auto" style="color: #3498db, margin: 2rem auto, object-fit: contain;" >
+    <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;"  >
     <h2>This is your password reset email.</h2>
     <p>Click on the link below to reset your password.</p>
     <button
