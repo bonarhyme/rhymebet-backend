@@ -25,7 +25,7 @@ const confirmEmail = (user) => {
     
     <p style="padding: 1.5rem; margin: 2rem auto; border: 1px solid lightblue; text-align: center;">${user.token}</p>
     
-    <
+  
     <br /><br />
 
     <i style="color: #ff3d1b">This code expires soon.</i>
