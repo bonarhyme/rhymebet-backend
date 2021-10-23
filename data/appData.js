@@ -4,7 +4,7 @@ const variables = {
   // rhymebetLogo: "https:/rhymebet.com/rhymebet-logo-complete.png",
 
   rhymebetLogo: "Rhymebet",
-  frontendHomeLink: "https://rhymebet-home.vercel.app/",
+  frontendHomeLink: "https://rhymebet-home.vercel.app",
   frontendDashboardLink: "",
   frontendAdminLink: "",
   frontendSuperAdminLink: "",
