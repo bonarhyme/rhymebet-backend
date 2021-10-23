@@ -31,7 +31,7 @@ const newsRoutes = require("./routes/newsRoutes");
 app.use(express.json());
 
 const corsOptions = {
-  origin: variables.frontendLink,
+  origin: [variables.frontendHomeLink],
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
