@@ -1,13 +1,12 @@
 const variables = {
-  // frontendLink: "http://localhost:3000",
+  // frontendHomeLink: "http://localhost:3000",
   // frontendLink: "https://www.rhymebet.com",
-  // rhymebetLogo: "https:/rhymebet.com/rhymebet-logo-complete.png",
+  rhymebetLogo: "https:/rhymebet.com/rhymebet-logo-complete.png",
 
   rhymebetLogo: "Rhymebet",
-  frontendHomeLink: "https://rhymebet-home.vercel.app",
-  frontendDashboardLink: "",
-  frontendAdminLink: "",
-  frontendSuperAdminLink: "",
+  frontendHomeLink: "https://rhymebet.com",
+  frontendAdminLink: "https://admin.rhymebet.com",
+  // frontendSuperAdminLink: "",
 };
 
 module.exports = variables;
