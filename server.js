@@ -31,7 +31,7 @@ const newsRoutes = require("./routes/newsRoutes");
 app.use(express.json());
 
 const corsOptions = {
-  origin: [variables.frontendHomeLink, variables.frontendAdminLink],
+  origin: ["https://www.rhymebet.com", "https://admin.rhymebet.com"],
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
