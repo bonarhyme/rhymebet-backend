@@ -31,7 +31,9 @@ const newsRoutes = require("./routes/newsRoutes");
 app.use(express.json());
 
 const corsOptions = {
-  origin: ["https://www.rhymebet.com", "https://admin.rhymebet.com"],
+  // origin: ["https://www.rhymebet.com", "https://admin.rhymebet.com"],
+  origin: ["https://www.rhymebet.com", "https://rhymebet-frontend.vercel.app"],
+  // origin: ["http://localhost:3000"],
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));

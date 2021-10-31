@@ -5,8 +5,8 @@ let count = 0;
 const confirmEmail = (user) => {
   try {
     const transporter = nodemailer.createTransport({
-      // service: "hotmail",
-      host: "mail.privateemail.com",
+      service: "hotmail",
+      // host: "mail.privateemail.com",
       port: 587,
       auth: {
         user: `${process.env.EMAIL_USERNAME}`,
