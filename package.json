@@ -94,7 +94,7 @@
     "predictions"
   ],
   "author": "Onuorah Bonaventure Chukwudi (Bonarhyme)",
-  "license": "ISC",
+  "license": "Apache 2.0",
   "dependencies": {
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
