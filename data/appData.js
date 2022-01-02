@@ -1,6 +1,6 @@
 const variables = {
   // frontendHomeLink: "http://localhost:3000",
-  frontendLink: "https://rhymebet-frontend-b5ef8os4w-bonarhyme.vercel.app/",
+  frontendLink: "https://rhymebet-frontend.vercel.app/",
   rhymebetLogo: "https:/rhymebet.com/rhymebet-logo-complete.png",
 
   rhymebetLogo: "Rhymebet",
