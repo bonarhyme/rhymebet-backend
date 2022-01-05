@@ -256,7 +256,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const emailExist = await User.findOne({ email });
 
   if (!emailExist) {
-    res.status(401);
+    res.status(404);
     throw new Error("This user does not exist in our system.");
   }
 
