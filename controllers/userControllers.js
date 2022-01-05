@@ -265,7 +265,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     token: generateToken(emailExist._id),
   };
 
-  console.log(user);
+  // console.log(user);
   await forgotPasswordEmail(user);
 
   res.send({

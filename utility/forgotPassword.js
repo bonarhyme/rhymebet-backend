@@ -33,7 +33,7 @@ const forgotPasswordEmail = (user) => {
       <a
         style="color: white; text-decoration: none"
         href="${variables.frontendLink}/reset/password/${user.token}"
-        >Activate account</a
+        >Reset Password</a
       ></button><br /><br />
 
     <i style="color: #ff3d1b">This link expires very soon.</i>
