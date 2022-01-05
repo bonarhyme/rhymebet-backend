@@ -6,7 +6,7 @@ const forgotPasswordEmail = (user) => {
   const transporter = nodemailer.createTransport({
     service: "hotmail",
     // host: "mail.privateemail.com",
-    port: 587,
+    // port: 587,
     auth: {
       user: `${process.env.EMAIL_USERNAME}`,
       pass: `${process.env.EMAIL_PASSWORD}`,
