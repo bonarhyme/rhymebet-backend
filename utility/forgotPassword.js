@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const variables = require("../data/appData");
-
+console.log("Inside forgot password was called. part 1");
 let count = 0;
 const forgotPasswordEmail = (user) => {
   const transporter = nodemailer.createTransport({
@@ -13,6 +13,7 @@ const forgotPasswordEmail = (user) => {
     },
     tls: { rejectUnauthorized: false },
   });
+  console.log("Inside forgot password was called. part 2");
   const options = {
     from: `${process.env.EMAIL_USERNAME}`,
     to: `${user.email}`,
