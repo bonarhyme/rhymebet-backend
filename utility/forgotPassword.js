@@ -8,8 +8,8 @@ const forgotPasswordEmail = (user) => {
     // host: "mail.privateemail.com",
     // port: 587,
     auth: {
-      user: "rhymebet@outlook.com",
-      pass: "Lg3CNSpNgZ!-crX",
+      user: process.env.EMAIL_USERNAME,
+      pass: process.env.EMAIL_PASSWORD,
     },
     tls: { rejectUnauthorized: false },
   });
