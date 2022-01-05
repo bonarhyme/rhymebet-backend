@@ -266,7 +266,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   };
 
   // console.log(user);
-  await forgotPasswordEmail(user);
+  forgotPasswordEmail(user);
 
   res.send({
     message:

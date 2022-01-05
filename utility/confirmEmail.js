@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const variables = require("../data/appData");
-console.log("Inside confirm email was called. part 1");
+
 let count = 0;
 const confirmEmail = (user) => {
   try {
@@ -14,17 +14,25 @@ const confirmEmail = (user) => {
       },
       tls: { rejectUnauthorized: false },
     });
-    console.log("Inside confirm email was called. part 2");
     const options = {
       from: `${process.env.EMAIL_USERNAME}`,
       to: `${user.email}`,
       subject: "Account Email Validation",
       html: `
-      <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png " width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;" alt="rhymebet logo" >
+      <img src=${
+        variables.frontendLink +
+        "static/media/rhymebet-logo-complete.ed42e04d.png"
+      } width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;" alt="rhymebet logo" >
     <h2>This is your account activation email</h2>
-    <p>Copy the code below and enter it in the field provided in rhymebet.com/verify or click  <a href=${variables.frontendLink} + "verify">here to verify your account</a> </p>
+    <p>Copy the code below and enter it in the field provided in ${
+      variables.frontendLink
+    }verify or click  <a href=${
+        variables.frontendLink + "verify"
+      }>here to verify your account</a> </p>
 
-    <p style="padding: 1.5rem; margin: 2rem auto; border: 1px solid lightblue; text-align: center;">${user.token}</p>
+    <p style="padding: 1.5rem; margin: 2rem auto; border: 1px solid lightblue; text-align: center;">${
+      user.token
+    }</p>
 
 
     <br /><br />

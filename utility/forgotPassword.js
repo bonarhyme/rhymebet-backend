@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const variables = require("../data/appData");
-console.log("Inside forgot password was called. part 1");
+
 let count = 0;
 const forgotPasswordEmail = (user) => {
   const transporter = nodemailer.createTransport({
@@ -13,13 +13,15 @@ const forgotPasswordEmail = (user) => {
     },
     tls: { rejectUnauthorized: false },
   });
-  console.log("Inside forgot password was called. part 2");
   const options = {
     from: `${process.env.EMAIL_USERNAME}`,
     to: `${user.email}`,
     subject: "Password Reset",
     html: `
-    <img src="https://rhymebet.com/static/media/rhymebet-logo-complete.ed42e04d.png" width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;"  >
+    <img src=${
+      variables.frontendLink +
+      "static/media/rhymebet-logo-complete.ed42e04d.png"
+    } width="200" height="auto" style="color: #3498db; margin: 3rem auto; object-fit: contain;  display: flex; justify-content: center;"  >
     <h2>This is your password reset email.</h2>
     <p>Click on the link below to reset your password.</p>
     <button
