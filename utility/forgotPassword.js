@@ -1,17 +1,25 @@
 const nodemailer = require("nodemailer");
 const variables = require("../data/appData");
 
+// Server name: smtp.office365.com
+// Port: 587
+// Encryption method: STARTTLS
+
+// host: options.host || 'smtp.office365.com', // Office 365 server
+//         port: options.port || 587,     // secure SMTP
+//         secure:options.secure || false,
+
 let count = 0;
 const forgotPasswordEmail = (user) => {
   const transporter = nodemailer.createTransport({
     service: "hotmail",
-    // host: "mail.privateemail.com",
-    // port: 587,
+    host: "smtp.office365.com",
+    port: 587,
     auth: {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
     },
-    tls: { rejectUnauthorized: false },
+    tls: { rejectUnauthorized: false, ciphers: "SSLv3" },
   });
   const options = {
     from: `${process.env.EMAIL_USERNAME}`,

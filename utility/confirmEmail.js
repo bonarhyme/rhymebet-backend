@@ -6,13 +6,13 @@ const confirmEmail = (user) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "hotmail",
-      // host: "mail.privateemail.com",
-      // port: 587,
+      host: "smtp.office365.com",
+      port: 587,
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
       },
-      tls: { rejectUnauthorized: false },
+      tls: { rejectUnauthorized: false, ciphers: "SSLv3" },
     });
     const options = {
       from: `${process.env.EMAIL_USERNAME}`,
